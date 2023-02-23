@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class Slide : MonoBehaviour
     [SerializeField] private Vector2 _velocity;
     [SerializeField] private LayerMask _layerMask;
     [SerializeField] private float _speed;
+    [SerializeField] private float _jumpMulty;
+    [SerializeField] private float _rightMulty;
 
     private Rigidbody2D _rb2d;
 
@@ -39,8 +42,34 @@ public class Slide : MonoBehaviour
         Vector2 alongSurface = Vector2.Perpendicular(_groundNormal);
 
         _targetVelocity = alongSurface * _speed;
+
+        if (_grounded)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                StartCoroutine(Jumping()); 
+            }
+        }
+        
     }
 
+    private IEnumerator Jumping()
+    {
+        float fullTime = .1f;
+        float time = 0;
+        while (true)
+        {
+            time += Time.deltaTime;
+            _rb2d.position += Vector2.up * _jumpMulty;
+            _rb2d.position += Vector2.right * _rightMulty;
+            yield return null;
+            if (time > fullTime)
+            {
+                yield break;
+            }
+        }
+    }
+    
     void FixedUpdate()
     {
         _velocity += _gravityModifier * Physics2D.gravity * Time.deltaTime;
